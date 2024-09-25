@@ -31,6 +31,9 @@ RUN npm install --only=production --legacy-peer-deps
 # Копируем собранный код из предыдущей стадии
 COPY --from=builder /app/dist ./dist
 
+# Копируем файл env
+COPY .env ./
+
 # Указываем порт
 EXPOSE 3000
 
