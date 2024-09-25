@@ -21,9 +21,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - uses: actions/checkout@v3
 
-      - name: Verify Docker Login
-        run: docker info
-
       - name: Deploy to Docker Hub
         uses: actions/setup-node@v3
         with:
