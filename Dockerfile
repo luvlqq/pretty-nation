@@ -1,41 +1,49 @@
-FROM node:18-alpine AS builder
+###################
+# BUILD FOR LOCAL DEVELOPMENT
+###################
 
-# Устанавливаем рабочую директорию
-WORKDIR /app
+FROM node:18-alpine As development
 
-# Копируем для установки зависимостей
-COPY package*.json ./
+WORKDIR /usr/src/app
 
-# Устанавливаем зависимости
+COPY --chown=node:node package*.json ./
+
 RUN npm ci
 
-# Копируем весь исходный код
-COPY . .
+COPY --chown=node:node . .
 
-# Сборка проекта
-RUN npm run build
+USER node
+
+###################
+# BUILD FOR PRODUCTION
+###################
+
+FROM node:18-alpine As build
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node package*.json ./
+
+COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+
+COPY --chown=node:node . .
+
 RUN npx prisma generate
+RUN npm run build
 
-# Создаем stage для production
-FROM node:18-alpine AS production
+ENV NODE_ENV production
 
-# Устанавливаем рабочую директорию
-WORKDIR /app
+RUN npm ci --only=production && npm cache clean --force
 
-# Копируем файлы для установки production
-COPY package*.json ./
+USER node
 
-# Устанавливаем ТОЛЬКО production зависимости
-RUN npm install --only=production --legacy-peer-deps
+###################
+# PRODUCTION
+###################
 
-# Копируем собранный код из предыдущей стадии
-COPY --from=builder /app/dist ./dist
+FROM node:18-alpine As production
 
-# Копируем файл env
-COPY .env ./
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 
-# Указываем порт
-EXPOSE 3000
-
-# Запуск приложения
-CMD ["npm", "run", "start:prod"]
+CMD [ "node", "dist/main.js" ]
