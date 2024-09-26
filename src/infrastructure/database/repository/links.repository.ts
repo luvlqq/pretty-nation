@@ -35,8 +35,8 @@ export class LinksRepository implements LinksRepositoryInterface {
     });
   }
 
-  public async getAllLinks(): Promise<Link[]> {
-    return this.prisma.link.findMany();
+  public async getAllLinks(userId: number): Promise<Link[]> {
+    return this.prisma.link.findMany({ where: { userId } });
   }
 
   public async getLink(code: string): Promise<Link> {

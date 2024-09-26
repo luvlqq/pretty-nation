@@ -35,8 +35,8 @@ export class LinksService {
     }
   }
 
-  public async getAllLinks(): Promise<string | null> {
-    const links = await this.repository.getAllLinks();
+  public async getAllLinks(userId: number): Promise<string | null> {
+    const links = await this.repository.getAllLinks(userId);
 
     if (links.length === 0) {
       return null;
@@ -49,7 +49,18 @@ export class LinksService {
       .join('\n\n');
   }
 
-  public async deleteLink(code: string): Promise<Link> {
+  public async deleteLink(
+    ctx: BotContext,
+    code: string,
+    userId: number,
+  ): Promise<Link | string> {
+    const getLink = await this.repository.getLink(code);
+
+    if (getLink.userId != userId) {
+      await sendMessage(ctx, BOT_MESSAGES.URL_DELETE_NOT_OWNER);
+      return;
+    }
+
     return this.repository.deleteLink(code);
   }
 

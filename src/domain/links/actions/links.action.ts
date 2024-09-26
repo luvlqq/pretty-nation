@@ -31,7 +31,7 @@ export class LinksAction {
 
   @Action(ActionsEnum.GET_LINKS)
   public async listLinksAction(@Ctx() ctx: Context): Promise<void> {
-    const linksList = await this.linksService.getAllLinks();
+    const linksList = await this.linksService.getAllLinks(ctx.from.id);
 
     if (!linksList) {
       await ctx.reply(
@@ -64,7 +64,7 @@ export class LinksAction {
   public async deleteLink(@Ctx() ctx: BotContext): Promise<void> {
     const code = ctx.match[1];
 
-    const deleted = await this.linksService.deleteLink(code);
+    const deleted = await this.linksService.deleteLink(ctx, code, ctx.from.id);
 
     if (deleted) {
       await sendMessage(

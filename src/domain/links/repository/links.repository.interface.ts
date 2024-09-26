@@ -12,7 +12,7 @@ export interface LinksRepositoryInterface {
     uniqueCode: string,
     userId: number,
   ): Promise<Link>;
-  getAllLinks(): Promise<Link[]>;
+  getAllLinks(userId: number): Promise<Link[]>;
   getLink(code: string): Promise<Link>;
   deleteLink(code: string): Promise<Link>;
 }
