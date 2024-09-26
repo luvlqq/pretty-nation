@@ -113,7 +113,12 @@ export class LinksService {
       await this.sendFoundLinkResponse(ctx, link);
       ctx.session.isGettingLink = false;
     } else {
-      await ctx.reply(BOT_MESSAGES.URL_FIND_ERROR);
+      await ctx.reply(
+        BOT_MESSAGES.URL_FIND_ERROR,
+        Markup.inlineKeyboard([
+          [Markup.button.callback(BOT_BUTTONS.HOME, ActionsEnum.HOME)],
+        ]),
+      );
     }
   }
 

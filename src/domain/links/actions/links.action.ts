@@ -11,7 +11,8 @@ export class LinksAction {
   constructor(private readonly linksService: LinksService) {}
 
   @Action(ActionsEnum.HOME)
-  public async startCommand(@Ctx() ctx: Context): Promise<void> {
+  public async startCommand(@Ctx() ctx: BotContext): Promise<void> {
+    ctx.session.isGettingLink = false;
     await ctx.reply(
       BOT_MESSAGES.HOME,
       Markup.inlineKeyboard([
