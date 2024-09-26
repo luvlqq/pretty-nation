@@ -46,7 +46,7 @@ export class LinksService {
       .map((link) => {
         return `<b>${link.title}</b>: <code>${link.url}</code> | <code>${link.code}</code>`;
       })
-      .join('\n');
+      .join('\n\n');
   }
 
   public async deleteLink(code: string): Promise<Link> {
