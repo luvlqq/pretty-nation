@@ -77,8 +77,6 @@ export class LinksAction {
           [Markup.button.callback(BOT_BUTTONS.HOME, ActionsEnum.HOME)],
         ]),
       );
-    } else {
-      await sendMessage(ctx, BOT_MESSAGES.URL_DELETE_ERROR);
     }
   }
 

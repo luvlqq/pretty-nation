@@ -56,9 +56,14 @@ export class LinksService {
   ): Promise<Link | string> {
     const getLink = await this.repository.getLink(code);
 
-    if (getLink.userId != userId) {
-      await sendMessage(ctx, BOT_MESSAGES.URL_DELETE_NOT_OWNER);
-      return;
+    if (!getLink || getLink.userId !== userId) {
+      await ctx.reply(
+        BOT_MESSAGES.URL_DELETE_NOT_OWNER,
+        Markup.inlineKeyboard([
+          [Markup.button.callback(BOT_BUTTONS.HOME, ActionsEnum.HOME)],
+        ]),
+      );
+      return null;
     }
 
     return this.repository.deleteLink(code);
