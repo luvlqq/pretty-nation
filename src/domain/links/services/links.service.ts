@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   LinksRepositoryInterface,
   TYPE_LinksRepositoryInterface,
@@ -14,6 +14,8 @@ import { Link, User } from '@prisma/client';
 
 @Injectable()
 export class LinksService {
+  private readonly logger = new Logger(LinksService.name);
+
   constructor(
     @Inject(TYPE_LinksRepositoryInterface)
     private repository: LinksRepositoryInterface,
@@ -23,7 +25,7 @@ export class LinksService {
     return this.repository.setUserToDb(userId);
   }
 
-  public async handleLink(ctx: BotContext) {
+  public async handleLink(ctx: BotContext): Promise<void> {
     const telegramId = ctx.from.id;
 
     if (ctx.session.isAddingLink) {
@@ -47,15 +49,18 @@ export class LinksService {
       .join('\n');
   }
 
-  public async deleteLink(code: string) {
+  public async deleteLink(code: string): Promise<Link> {
     return this.repository.deleteLink(code);
   }
 
-  private async getLink(code: string) {
+  private async getLink(code: string): Promise<Link> {
     return this.repository.getLink(code);
   }
 
-  private async handleAddingLink(ctx: BotContext, telegramId: number) {
+  private async handleAddingLink(
+    ctx: BotContext,
+    telegramId: number,
+  ): Promise<void | undefined> {
     const input = ctx.text;
     const [linkName, url] = input.split(' ');
 
@@ -77,11 +82,15 @@ export class LinksService {
       ctx.session.isAddingLink = false;
     } catch (e) {
       ctx.session.isAddingLink = false;
-      await ctx.reply(`Произошла ошибка: ${e.message}`);
+      this.logger.error(`Error form client: ${e.message}`);
+      await ctx.reply(BOT_MESSAGES.ERROR);
     }
   }
 
-  private async sendLinkAddedResponse(ctx: BotContext, uniqueCode: string) {
+  private async sendLinkAddedResponse(
+    ctx: BotContext,
+    uniqueCode: string,
+  ): Promise<void> {
     await sendMessage(
       ctx,
       `${BOT_MESSAGES.INPUT_URL_SUCCESS}<code>${uniqueCode}</code>`,
@@ -96,7 +105,7 @@ export class LinksService {
     );
   }
 
-  private async handleGettingLink(ctx: BotContext) {
+  private async handleGettingLink(ctx: BotContext): Promise<void> {
     const code = ctx.text;
     const link = await this.getLink(code);
 
@@ -108,7 +117,10 @@ export class LinksService {
     }
   }
 
-  private async sendFoundLinkResponse(ctx: BotContext, link: Link) {
+  private async sendFoundLinkResponse(
+    ctx: BotContext,
+    link: Link,
+  ): Promise<void> {
     await sendMessage(
       ctx,
       `${BOT_MESSAGES.URL_FIND}<b>${link.title}</b>: <code>${link.url}</code>`,

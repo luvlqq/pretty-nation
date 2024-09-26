@@ -9,7 +9,7 @@ export class LinksHandler {
   constructor(private readonly linksService: LinksService) {}
 
   @Start()
-  public async startCommand(@Ctx() ctx: Context) {
+  public async startCommand(@Ctx() ctx: Context): Promise<void> {
     await this.linksService.setUserToDb(ctx.from.id);
     await ctx.reply(
       BOT_MESSAGES.START,
@@ -22,7 +22,7 @@ export class LinksHandler {
   }
 
   @Help()
-  public async help(@Ctx() ctx: Context) {
+  public async help(@Ctx() ctx: Context): Promise<void> {
     await ctx.reply(BOT_MESSAGES.HELP);
   }
 }

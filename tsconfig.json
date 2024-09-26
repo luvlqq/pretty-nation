@@ -42,6 +42,12 @@
       "@infrastructure/*": [
         "src/infrastructure/*"
       ],
+      "@infrastructure/db": [
+        "src/infrastructure/database/services"
+      ],
+      "@infrastructure/db/*": [
+        "src/infrastructure/database/services/*"
+      ],
       "@domain": [
         "src/domain"
       ],

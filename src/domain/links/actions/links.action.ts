@@ -11,7 +11,7 @@ export class LinksAction {
   constructor(private readonly linksService: LinksService) {}
 
   @Action(ActionsEnum.HOME)
-  public async startCommand(@Ctx() ctx: Context) {
+  public async startCommand(@Ctx() ctx: Context): Promise<void> {
     await ctx.reply(
       BOT_MESSAGES.HOME,
       Markup.inlineKeyboard([
@@ -23,13 +23,13 @@ export class LinksAction {
   }
 
   @Action(ActionsEnum.ADD_LINK)
-  async addLinkAction(@Ctx() ctx: BotContext) {
+  public async addLinkAction(@Ctx() ctx: BotContext): Promise<void> {
     await sendMessage(ctx, BOT_MESSAGES.INPUT_ADD_LINK);
     ctx.session.isAddingLink = true;
   }
 
   @Action(ActionsEnum.GET_LINKS)
-  async listLinksAction(@Ctx() ctx: Context) {
+  public async listLinksAction(@Ctx() ctx: Context): Promise<void> {
     const linksList = await this.linksService.getAllLinks();
 
     if (!linksList) {
@@ -54,13 +54,13 @@ export class LinksAction {
   }
 
   @Action(ActionsEnum.GET_LINK)
-  async getLink(@Ctx() ctx: BotContext) {
+  public async getLink(@Ctx() ctx: BotContext): Promise<void> {
     await ctx.reply(BOT_MESSAGES.INPUT_URL_CODE);
     ctx.session.isGettingLink = true;
   }
 
   @Action(new RegExp(`${ActionsEnum.DELETE_LINK}_(.+)`))
-  async deleteLink(@Ctx() ctx: BotContext) {
+  public async deleteLink(@Ctx() ctx: BotContext): Promise<void> {
     const code = ctx.match[1];
 
     const deleted = await this.linksService.deleteLink(code);
@@ -82,7 +82,7 @@ export class LinksAction {
   }
 
   @On('text')
-  public async handleLink(@Ctx() ctx: BotContext) {
+  public async handleLink(@Ctx() ctx: BotContext): Promise<void> {
     return this.linksService.handleLink(ctx);
   }
 }

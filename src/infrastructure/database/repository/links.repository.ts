@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { LinksRepositoryInterface } from '@domain/links/repository/links.repository.interface';
-import { PrismaService } from '@infrastructure/database/services/database.service';
 import { Link, User } from '@prisma/client';
+import { PrismaService } from '@infrastructure/db';
 
 @Injectable()
 export class LinksRepository implements LinksRepositoryInterface {
